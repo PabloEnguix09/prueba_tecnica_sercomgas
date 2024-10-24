@@ -1,0 +1,17 @@
+{
+	"tabWidth": 4,
+	"bracketSpacing": true,
+	"semi": true,
+	"singleQuote": true,
+	"arrowParens": "always",
+	"overrides": [
+		{
+			"files": "*",
+			"options": {
+				"tabWidth": 4,
+				"useTabs": true,
+				"bracketSpacing": true
+			}
+		}
+	]
+}
