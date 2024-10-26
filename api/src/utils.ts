@@ -29,7 +29,6 @@ export async function get(server: FastifyInstance, route: string, reply: Fastify
     const repo = getRepository(server, route);
 
     if (!repo) {
-        reply.code(500).send({message: "An error occurred"});
         return;
     }
     const data = await repo.find(options).then((data) => data).catch((err) => {reply.code(500).send({message: err})});
@@ -40,7 +39,6 @@ export async function post(server: FastifyInstance, route: string, reply: Fastif
     const repo = getRepository(server, route);
 
     if (!repo) {
-        reply.code(500).send({message: "An error occurred"});
         return;
     }
 
@@ -59,7 +57,6 @@ export async function deleteAll(server: FastifyInstance, route: string, reply: F
     const repo = getRepository(server, route);
 
     if (!repo) {
-        reply.code(500).send({message: "An error occurred"});
         return;
     }
 
