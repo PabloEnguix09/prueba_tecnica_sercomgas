@@ -1,26 +1,36 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import '../css/App.css';
+import CustomTable from '../components/customTable';
+import { OperationTable } from '../types/types';
+
+const mockData: OperationTable[] = [
+	{
+		id: 1,
+		proveedor: 'Coca Cola',
+		cliente: 'Coca Cola',
+		litros_de_gas: 100,
+		precio_total: 100,
+		operacion: 'Compra',
+		fecha: '2022-01-01',
+	},
+	{
+		id: 2,
+		proveedor: 'Coca Cola',
+		cliente: 'Coca Cola',
+		litros_de_gas: 100,
+		precio_total: 100,
+		operacion: 'Compra',
+		fecha: '2022-01-01',
+	},
+];
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	return (
+		<div className="App">
+			<h1 className="my-3">Operaciones</h1>
+			<CustomTable key={'OperationTable'} data={mockData} />
+		</div>
+	);
 }
 
 export default App;
