@@ -8,7 +8,7 @@ interface Options {
     skip: number
 }
 
-export async function get(server: FastifyInstance, route: string, reply: FastifyReply, options?: Options) {
+function getRepository(server: FastifyInstance, route: string): Repository<Marketer | Operation> | void {
     let repo : Repository<Marketer | Operation>;
 
     switch (true) {
@@ -19,9 +19,38 @@ export async function get(server: FastifyInstance, route: string, reply: Fastify
             repo = server.orm["typeorm"].getRepository(Operation);
             break;
         default:
-            reply.code(500).send({message: "An error occurred"});
             return;
+    }
+
+    return repo;
+}
+
+export async function get(server: FastifyInstance, route: string, reply: FastifyReply, options?: Options) {
+    const repo = getRepository(server, route);
+
+    if (!repo) {
+        reply.code(500).send({message: "An error occurred"});
+        return;
     }
     const data = await repo.find(options).then((data) => data).catch((err) => {reply.code(500).send({message: err})});
     reply.code(200).send({success: true, data: data});
+}
+
+export async function post(server: FastifyInstance, route: string, reply: FastifyReply, body: Marketer | Operation) {
+    const repo = getRepository(server, route);
+
+    if (!repo) {
+        reply.code(500).send({message: "An error occurred"});
+        return;
+    }
+
+    const searchParams = body instanceof Marketer ? {name: body.name} : {marketer_id: body.marketer_id, client_id: body.client_id, type: body.type, amount: body.amount, price: body.price};
+
+    const rowAlreadyExists = await repo.findOneBy(searchParams)
+
+    if(rowAlreadyExists) {
+        reply.code(409).send({message: "Row already exists"});
+    } else {
+        await repo.save(body).then(() => reply.code(201).send({success: true, data: body}));
+    }
 }
