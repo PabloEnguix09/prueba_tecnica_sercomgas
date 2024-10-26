@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyReply } from "fastify";
-import { get, post } from "../utils";
+import { deleteAll, get, post } from "../utils";
 import { MarketerType } from "../lib/marketer.types";
 import { Marketer } from "../db/entities/marketer";
 
@@ -20,4 +20,8 @@ export function marketerRoutes(server: FastifyInstance): void {
         
         await post(server, "/marketers", reply, newMarketer);
     });
+
+    server.delete("/marketers", async(request, reply) => {
+        await deleteAll(server, "/marketers", reply);
+    })
 }

@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyReply } from "fastify";
-import { get, post } from "../utils";
+import { deleteAll, get, post } from "../utils";
 import { OperationType } from "../lib/operation.types";
 import { Operation } from "../db/entities/operation";
 
@@ -23,5 +23,9 @@ export function operationRoutes(server: FastifyInstance) {
         newOperation.updated_at = new Date();
 
         await post(server, "/operations", reply, newOperation);
+    })
+
+    server.delete("/operations", async(request, reply) => {
+        await deleteAll(server, "/operations", reply);
     })
 }

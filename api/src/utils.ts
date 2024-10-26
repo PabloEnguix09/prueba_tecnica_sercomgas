@@ -54,3 +54,15 @@ export async function post(server: FastifyInstance, route: string, reply: Fastif
         await repo.save(body).then(() => reply.code(201).send({success: true, data: body}));
     }
 }
+
+export async function deleteAll(server: FastifyInstance, route: string, reply: FastifyReply) {
+    const repo = getRepository(server, route);
+
+    if (!repo) {
+        reply.code(500).send({message: "An error occurred"});
+        return;
+    }
+
+    await repo.clear();
+    reply.code(204).send();
+}
