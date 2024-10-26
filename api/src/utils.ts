@@ -59,7 +59,7 @@ export async function deleteAll(server: FastifyInstance, route: string, reply: F
     if (!repo) {
         return;
     }
-
-    await repo.clear();
+    const repository = route.split("/")[1];
+    await repo.query(`TRUNCATE TABLE ${repository} RESTART IDENTITY CASCADE`);
     reply.code(204).send();
 }

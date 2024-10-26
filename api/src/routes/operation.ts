@@ -20,7 +20,6 @@ export function operationRoutes(server: FastifyInstance) {
         newOperation.amount = amount;
         newOperation.price = price;
         newOperation.created_at = new Date();
-        newOperation.updated_at = new Date();
 
         await post(server, "/operations", reply, newOperation);
     })

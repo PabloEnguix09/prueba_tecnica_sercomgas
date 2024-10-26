@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Marketer } from "./marketer";
 
 
@@ -26,8 +26,5 @@ export class Operation {
 
     @CreateDateColumn()
     created_at!: Date;
-
-    @UpdateDateColumn()
-    updated_at!: Date;
 
 }

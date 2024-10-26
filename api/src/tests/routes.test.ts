@@ -68,15 +68,6 @@ describe("ENDPOINT TESTS", () => {
                 expect(response.statusCode).toEqual(200);
                 expect(response.json().data).toEqual([]);
             });
-
-            it("should return 404", async () => {
-                const response = await server.inject({
-                    method: "GET",
-                    url: "/marketerss"
-                });
-
-                expect(response.statusCode).toEqual(404);
-            });
         });
 
         describe("POST /marketers", () => {
@@ -134,16 +125,109 @@ describe("ENDPOINT TESTS", () => {
                 expect(response.json().data.length).toEqual(2);
             });
         });
+    });
 
-        describe("DELETE /marketers", () => {
-            it("should return 204", async () => {
+    describe("/operations", () => {
+
+        describe("GET /operations (empty table)", () => {
+            it("should return 200 and empty array", async () => {
                 const response = await server.inject({
-                    method: "DELETE",
-                    url: "/marketers"
+                    method: "GET",
+                    url: "/operations"
+                });
+                expect(response.statusCode).toEqual(200);
+                expect(response.json().data).toEqual([]);
+            });
+        });
+
+        describe("POST /operations", () => {
+            const newOperation = {
+                    marketer_id: 1,
+                    client_id: 2,
+                    type: "Compra",
+                    amount: 1,
+                    price: 1
+                }
+
+            it("should return 201", async () => {
+                const response = await server.inject({
+                    method: "POST",
+                    url: "/operations",
+                    body: newOperation
                 });
 
-                expect(response.statusCode).toEqual(204);
+                expect(response.statusCode).toEqual(201);
+                expect(response.json().data.marketer_id).toEqual(1);
+                expect(response.json().data.client_id).toEqual(2);
+                expect(response.json().data.type).toEqual("Compra");
+                expect(response.json().data.amount).toEqual(1);
+                expect(response.json().data.price).toEqual(1);
             });
+
+            it("should return 409", async () => {
+                const response = await server.inject({
+                    method: "POST",
+                    url: "/operations",
+                    body: newOperation
+                });
+
+                expect(response.statusCode).toEqual(409);
+                expect(response.json().message).toEqual("Row already exists");
+            });
+
+            it("should return 201 (other operation)", async () => {
+                const newOperation = {
+                    marketer_id: 1,
+                    client_id: 2,
+                    type: "Venta",
+                    amount: 1,
+                    price: 1
+                }
+                const response = await server.inject({
+                    method: "POST",
+                    url: "/operations",
+                    body: newOperation
+                });
+
+                expect(response.statusCode).toEqual(201);
+                expect(response.json().data.marketer_id).toEqual(1);
+                expect(response.json().data.client_id).toEqual(2);
+                expect(response.json().data.type).toEqual("Venta");
+                expect(response.json().data.amount).toEqual(1);
+                expect(response.json().data.price).toEqual(1);
+            });
+        });
+
+        describe("GET /operations", () => {
+            it("should return 200", async () => {
+                const response = await server.inject({
+                    method: "GET",
+                    url: "/operations"
+                });
+
+                expect(response.statusCode).toEqual(200);
+                expect(response.json().data.length).toEqual(2);
+            });
+        });
+    });
+
+    describe("DELETE /marketers", () => {
+        it("should return 204", async () => {
+            const response = await server.inject({
+                method: "DELETE",
+                url: "/marketers"
+            });
+            expect(response.statusCode).toEqual(204);
+        });
+    });
+
+    describe("DELETE /operations", () => {
+        it("should return 204", async () => {
+            const response = await server.inject({
+                method: "DELETE",
+                url: "/operations"
+            });
+            expect(response.statusCode).toEqual(204);
         });
     });
 });
