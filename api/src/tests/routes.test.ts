@@ -112,6 +112,20 @@ describe("ENDPOINT TESTS", () => {
                 expect(response.statusCode).toEqual(201);
                 expect(response.json().data.name).toEqual("other");
             });
+
+            it("should return 400 BAD REQUEST", async () => {
+                const newMarketer = {
+                    notARealField: "notARealValue"
+                }
+                const response = await server.inject({
+                    method: "POST",
+                    url: "/marketers",
+                    body: newMarketer
+                });
+
+                expect(response.statusCode).toEqual(400);                
+                expect(response.json().message).toEqual("Invalid request body");
+            });
         });
 
         describe("GET /marketers", () => {
@@ -195,6 +209,20 @@ describe("ENDPOINT TESTS", () => {
                 expect(response.json().data.type).toEqual("Venta");
                 expect(response.json().data.amount).toEqual(1);
                 expect(response.json().data.price).toEqual(1);
+            });
+
+            it("should return 400 BAD REQUEST", async () => {
+                const newOperation = {
+                    notARealField: "notARealValue"
+                }
+                const response = await server.inject({
+                    method: "POST",
+                    url: "/operations",
+                    body: newOperation
+                });
+
+                expect(response.statusCode).toEqual(400);
+                expect(response.json().message).toEqual("Invalid request body");
             });
         });
 

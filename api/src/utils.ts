@@ -43,6 +43,11 @@ export async function post(server: FastifyInstance, route: string, reply: Fastif
     }
 
     const searchParams = body instanceof Marketer ? {name: body.name} : {marketer_id: body.marketer_id, client_id: body.client_id, type: body.type, amount: body.amount, price: body.price};
+    
+    if (isBodyCorrect(body) === false) {
+        reply.code(400).send({message: "Invalid request body"});
+        return;
+    }
 
     const rowAlreadyExists = await repo.findOneBy(searchParams)
 
@@ -51,6 +56,20 @@ export async function post(server: FastifyInstance, route: string, reply: Fastif
     } else {
         await repo.save(body).then(() => reply.code(201).send({success: true, data: body}));
     }
+}
+
+function isBodyCorrect(body: Marketer | Operation): boolean {
+    if (body instanceof Marketer) {
+        if(body.name === undefined) {
+            return false;
+        }
+    } else if (body instanceof Operation) {
+        if(body.marketer_id === undefined || body.client_id === undefined || body.type === undefined || body.amount === undefined || body.price === undefined) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 export async function deleteAll(server: FastifyInstance, route: string, reply: FastifyReply) {
