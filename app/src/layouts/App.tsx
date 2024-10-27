@@ -26,8 +26,8 @@ const mockData: OperationTable[] = [
 
 function App() {
 	return (
-		<div className="App">
-			<h1 className="my-3">Operaciones</h1>
+		<div className="App container">
+			<h1 className="text-center my-3">Operaciones</h1>
 			<CustomTable key={'OperationTable'} data={mockData} />
 		</div>
 	);
