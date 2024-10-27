@@ -1,6 +1,7 @@
 import fastify from "fastify";
 import { configDb } from "./db/db.config";
 import { configRoutes } from "./routes";
+import fastifyCors from "@fastify/cors";
 
 export function buildServer(logger: boolean = false) {
     const server = fastify({ logger: logger });
@@ -16,6 +17,10 @@ export function buildServer(logger: boolean = false) {
         }
 
         server.log.info(`server listening on ${address}`);
+    });
+
+    server.register(fastifyCors, {
+        origin: ["http://localhost:3000"],
     });
 
     return server;
