@@ -1,5 +1,7 @@
 import React from 'react';
 import '../css/NewOperation.css';
+import { Option } from '../types/types';
+import { convertMarketerToOption } from '../services/utils';
 
 const mockData = [
 	{
@@ -33,7 +35,22 @@ export default function NewOperation() {
 	const [type, setType] = React.useState('');
 	const [amount, setAmount] = React.useState(NaN);
 	const [price, setPrice] = React.useState(NaN);
-	const [errorMsg, setErrorMsg] = React.useState('');
+
+	const emptyFieldErrorMsg = 'Este campo no puede estar vacío';
+
+	const marketers: Option[] = localStorage.getItem('marketers')
+		? convertMarketerToOption(JSON.parse(localStorage.getItem('marketers')!))
+		: mockData;
+
+	const toggleErrorMsg = (element: HTMLElement) => {
+		if (element.classList.contains('is-invalid')) {
+			element.classList.remove('is-invalid');
+			element.classList.add('is-valid');
+		} else {
+			element.classList.add('is-invalid');
+			element.classList.remove('is-valid');
+		}
+	};
 
 	React.useEffect(() => {
 		const marketer_id_element = document.getElementById('marketer_id')!;
@@ -42,44 +59,107 @@ export default function NewOperation() {
 			const marketer_id_error = document.getElementById('marketer_id_error')!;
 			const client_id_error = document.getElementById('client_id_error')!;
 
-			marketer_id_element.classList.remove('is-valid');
-			client_id_element.classList.remove('is-valid');
-
-			marketer_id_element.classList.add('is-invalid');
-			client_id_element.classList.add('is-invalid');
+			if (!marketer_id_element.classList.contains('is-invalid')) toggleErrorMsg(marketer_id_element);
+			if (!client_id_element.classList.contains('is-invalid')) toggleErrorMsg(client_id_element);
 
 			marketer_id_error.innerHTML = 'No se puede seleccionar el mismo cliente como proveedor';
 			client_id_error.innerHTML = 'No se puede seleccionar el mismo proveedor como cliente';
 		} else {
 			if (marketer_id_element.classList.contains('is-invalid')) {
-				marketer_id_element.classList.remove('is-invalid');
-				client_id_element.classList.remove('is-invalid');
+				toggleErrorMsg(marketer_id_element);
+				toggleErrorMsg(client_id_element);
 			}
 			if (!isNaN(marketer_id)) {
 				marketer_id_element.classList.add('is-valid');
+			} else {
+				marketer_id_element.classList.remove('is-valid');
 			}
 			if (!isNaN(client_id)) {
 				client_id_element.classList.add('is-valid');
+			} else {
+				client_id_element.classList.remove('is-valid');
 			}
-
-			setErrorMsg('');
 		}
 	}, [marketer_id, client_id]);
 
-	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, setState: React.Dispatch<React.SetStateAction<number>>) => {
-		setErrorMsg('');
+	React.useEffect(() => {
+		const type_element = document.getElementById('type')!;
 
-		if (event.target instanceof HTMLInputElement && (parseInt(event.target.value) < 0 || isNaN(parseInt(event.target.value)))) {
-			setErrorMsg(`El valor de "${event.target.placeholder}" no puede estar vacío`);
+		if (type !== '' && !type_element.classList.contains('is-valid')) toggleErrorMsg(type_element);
+	}, [type]);
+
+	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, setState: React.Dispatch<React.SetStateAction<number>>) => {
+		if (!isNaN(parseInt(event.target.value)) && !event.target.classList.contains('is-valid')) {
+			event.target.classList.add('is-valid');
+		} else if (isNaN(parseInt(event.target.value)) && !event.target.classList.contains('is-invalid')) {
+			event.target.classList.add('is-invalid');
+		}
+		if (isNaN(parseInt(event.target.value)) && !event.target.classList.contains('is-invalid')) {
+			toggleErrorMsg(event.target);
+		} else if (!isNaN(parseInt(event.target.value)) && !event.target.classList.contains('is-valid')) {
+			toggleErrorMsg(event.target);
 		}
 
 		setState(parseInt(event.target.value));
 	};
 
+	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		event.stopPropagation();
+
+		if (isNaN(marketer_id) && !document.getElementById('marketer_id')?.classList.contains('is-invalid')) {
+			toggleErrorMsg(document.getElementById('marketer_id')!);
+			document.getElementById('marketer_id_error')!.innerHTML = emptyFieldErrorMsg;
+		}
+
+		if (isNaN(client_id) && !document.getElementById('client_id')?.classList.contains('is-invalid')) {
+			toggleErrorMsg(document.getElementById('client_id')!);
+			document.getElementById('client_id_error')!.innerHTML = emptyFieldErrorMsg;
+		}
+
+		if (type === '') {
+			toggleErrorMsg(document.getElementById('type')!);
+		}
+
+		if (isNaN(amount) && !document.getElementById('amount')?.classList.contains('is-invalid')) {
+			toggleErrorMsg(document.getElementById('amount')!);
+		}
+
+		if (isNaN(price) && !document.getElementById('price')?.classList.contains('is-invalid')) {
+			toggleErrorMsg(document.getElementById('price')!);
+		}
+
+		if (!isNaN(marketer_id) && !isNaN(client_id) && marketer_id !== client_id && type !== '' && !isNaN(amount) && !isNaN(price)) {
+			try {
+				const response = await fetch('http://localhost:8080/operations', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						marketer_id,
+						client_id,
+						type,
+						amount,
+						price,
+					}),
+				});
+
+				if (response.ok) {
+					window.location.href = '/';
+				}
+			} catch (error) {
+				console.log(error);
+				document.getElementById('error_message')!.innerHTML =
+					'Ha ocurrido un error al crear la nueva operación. Por favor, inténtelo más tarde o póngase en conctacto con un administrador';
+			}
+		}
+	};
+
 	return (
 		<div className="NewOperation">
 			<h1 className="text-center my-3">Nueva operación</h1>
-			<form method="POST" className="row g-4 m-5 flex-column align-items-center needs-validation" noValidate action="submit">
+			<form className="row g-4 m-5 flex-column align-items-center needs-validation" noValidate onSubmit={(e) => handleSubmit(e)}>
 				<div className="d-flex col-6 justify-content-between flex-wrap">
 					<label htmlFor="provider">Nombre del proveedor</label>
 					<select
@@ -93,14 +173,14 @@ export default function NewOperation() {
 						<option disabled value="">
 							Proveedor
 						</option>
-						{mockData.map((option) => (
+						{marketers.map((option) => (
 							<option key={option.value} value={option.value}>
 								{option.label}
 							</option>
 						))}
 					</select>
 					<div className="invalid-feedback text-end" id="marketer_id_error">
-						El campo no puede estar vacío
+						{emptyFieldErrorMsg}
 					</div>
 				</div>
 
@@ -117,21 +197,21 @@ export default function NewOperation() {
 						<option disabled value="">
 							Cliente
 						</option>
-						{mockData.map((option) => (
+						{marketers.map((option) => (
 							<option key={option.value} value={option.value}>
 								{option.label}
 							</option>
 						))}
 					</select>
 					<div className="invalid-feedback text-end" id="client_id_error">
-						El campo no puede estar vacío
+						{emptyFieldErrorMsg}
 					</div>
 				</div>
 
-				<div className="d-flex col-6 justify-content-between">
+				<div className="d-flex col-6 justify-content-between flex-wrap">
 					<label htmlFor="type">Tipo de operación</label>
 
-					<select name="type" id="type" className="form-select w-75" required onChange={(e) => setType(e.target.value)} value={type}>
+					<select name="type" id="type" className="form-select w-75 col-12" required onChange={(e) => setType(e.target.value)} value={type}>
 						<option disabled value="">
 							Tipo de operación
 						</option>
@@ -141,43 +221,47 @@ export default function NewOperation() {
 							</option>
 						))}
 					</select>
-					<div className="invalid-feedback text-end" id="type_id_error">
-						El campo no puede estar vacío
+					<div className="invalid-feedback text-end" id="type_error">
+						{emptyFieldErrorMsg}
 					</div>
 				</div>
 
 				<div className="d-flex col-6 justify-content-between gap-5">
-					<div className="input-group">
+					<div className="input-group h-50">
 						<input
 							type="text"
 							className="form-control"
+							id="amount"
 							placeholder="Cantidad de gas"
 							onChange={(e) => handleInputChange(e, setAmount)}
 							value={isNaN(amount) ? '' : amount}
 							required
 						/>
 						<span className="input-group-text">L</span>
+						<div className="invalid-feedback" id="amount_error">
+							{emptyFieldErrorMsg}
+						</div>
 					</div>
 
-					<div className="input-group">
+					<div className="input-group h-50">
 						<input
 							type="text"
 							className="form-control"
 							placeholder="Precio total"
+							id="price"
 							onChange={(e) => handleInputChange(e, setPrice)}
 							value={isNaN(price) ? '' : price}
 							required
 						/>
 						<span className="input-group-text">€</span>
+						<div className="invalid-feedback" id="price_error">
+							{emptyFieldErrorMsg}
+						</div>
 					</div>
 				</div>
 
-				<button type="submit" className="btn btn-primary col-6" onClick={(e) => e?.preventDefault()}>
-					Crear operación
-				</button>
-				<span id="error-message" className="p-0 text-danger text-center col-6">
-					{errorMsg}
-				</span>
+				<input type="submit" className="btn btn-primary col-6" value="Crear operación" />
+				<span id="error_message" className="p-0 text-danger text-center col-6"></span>
 			</form>
 		</div>
 	);
