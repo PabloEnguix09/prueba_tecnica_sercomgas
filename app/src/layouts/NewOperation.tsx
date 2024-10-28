@@ -42,13 +42,23 @@ export default function NewOperation() {
 		? convertMarketerToOption(JSON.parse(localStorage.getItem('marketers')!))
 		: mockData;
 
-	const toggleErrorMsg = (element: HTMLElement) => {
-		if (element.classList.contains('is-invalid')) {
-			element.classList.remove('is-invalid');
-			element.classList.add('is-valid');
-		} else {
-			element.classList.add('is-invalid');
-			element.classList.remove('is-valid');
+	const toggleErrorMsg = (element: HTMLElement, data: string | number) => {
+		if (typeof data === 'string') {
+			if (data === '') {
+				element.classList.add('is-invalid');
+				element.classList.remove('is-valid');
+			} else {
+				element.classList.remove('is-invalid');
+				element.classList.add('is-valid');
+			}
+		} else if (typeof data === 'number') {
+			if (isNaN(data)) {
+				element.classList.add('is-invalid');
+				element.classList.remove('is-valid');
+			} else {
+				element.classList.remove('is-invalid');
+				element.classList.add('is-valid');
+			}
 		}
 	};
 
@@ -59,47 +69,25 @@ export default function NewOperation() {
 			const marketer_id_error = document.getElementById('marketer_id_error')!;
 			const client_id_error = document.getElementById('client_id_error')!;
 
-			if (!marketer_id_element.classList.contains('is-invalid')) toggleErrorMsg(marketer_id_element);
-			if (!client_id_element.classList.contains('is-invalid')) toggleErrorMsg(client_id_element);
+			marketer_id_element.classList.add('is-invalid');
+			client_id_element.classList.add('is-invalid');
 
 			marketer_id_error.innerHTML = 'No se puede seleccionar el mismo cliente como proveedor';
 			client_id_error.innerHTML = 'No se puede seleccionar el mismo proveedor como cliente';
 		} else {
-			if (marketer_id_element.classList.contains('is-invalid')) {
-				toggleErrorMsg(marketer_id_element);
-				toggleErrorMsg(client_id_element);
-			}
-			if (!isNaN(marketer_id)) {
-				marketer_id_element.classList.add('is-valid');
-			} else {
-				marketer_id_element.classList.remove('is-valid');
-			}
-			if (!isNaN(client_id)) {
-				client_id_element.classList.add('is-valid');
-			} else {
-				client_id_element.classList.remove('is-valid');
-			}
+			if (!isNaN(marketer_id)) toggleErrorMsg(marketer_id_element, marketer_id);
+			if (!isNaN(client_id)) toggleErrorMsg(client_id_element, client_id);
 		}
 	}, [marketer_id, client_id]);
 
 	React.useEffect(() => {
 		const type_element = document.getElementById('type')!;
 
-		if (type !== '' && !type_element.classList.contains('is-valid')) toggleErrorMsg(type_element);
+		if (type !== '' && !type_element.classList.contains('is-valid')) toggleErrorMsg(type_element, type);
 	}, [type]);
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, setState: React.Dispatch<React.SetStateAction<number>>) => {
-		if (!isNaN(parseInt(event.target.value)) && !event.target.classList.contains('is-valid')) {
-			event.target.classList.add('is-valid');
-		} else if (isNaN(parseInt(event.target.value)) && !event.target.classList.contains('is-invalid')) {
-			event.target.classList.add('is-invalid');
-		}
-		if (isNaN(parseInt(event.target.value)) && !event.target.classList.contains('is-invalid')) {
-			toggleErrorMsg(event.target);
-		} else if (!isNaN(parseInt(event.target.value)) && !event.target.classList.contains('is-valid')) {
-			toggleErrorMsg(event.target);
-		}
-
+		toggleErrorMsg(event.target, parseInt(event.target.value));
 		setState(parseInt(event.target.value));
 	};
 
@@ -107,27 +95,19 @@ export default function NewOperation() {
 		event.preventDefault();
 		event.stopPropagation();
 
-		if (isNaN(marketer_id) && !document.getElementById('marketer_id')?.classList.contains('is-invalid')) {
-			toggleErrorMsg(document.getElementById('marketer_id')!);
+		if (isNaN(marketer_id)) {
+			toggleErrorMsg(document.getElementById('marketer_id')!, marketer_id);
 			document.getElementById('marketer_id_error')!.innerHTML = emptyFieldErrorMsg;
 		}
 
-		if (isNaN(client_id) && !document.getElementById('client_id')?.classList.contains('is-invalid')) {
-			toggleErrorMsg(document.getElementById('client_id')!);
+		if (isNaN(client_id)) {
+			toggleErrorMsg(document.getElementById('client_id')!, client_id);
 			document.getElementById('client_id_error')!.innerHTML = emptyFieldErrorMsg;
 		}
 
-		if (type === '') {
-			toggleErrorMsg(document.getElementById('type')!);
-		}
-
-		if (isNaN(amount) && !document.getElementById('amount')?.classList.contains('is-invalid')) {
-			toggleErrorMsg(document.getElementById('amount')!);
-		}
-
-		if (isNaN(price) && !document.getElementById('price')?.classList.contains('is-invalid')) {
-			toggleErrorMsg(document.getElementById('price')!);
-		}
+		if (type === '') toggleErrorMsg(document.getElementById('type')!, type);
+		if (isNaN(amount)) toggleErrorMsg(document.getElementById('amount')!, amount);
+		if (isNaN(price)) toggleErrorMsg(document.getElementById('price')!, price);
 
 		if (!isNaN(marketer_id) && !isNaN(client_id) && marketer_id !== client_id && type !== '' && !isNaN(amount) && !isNaN(price)) {
 			try {
