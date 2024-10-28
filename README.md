@@ -166,3 +166,7 @@ Los directorios que se encuentran dentro de la carpeta `app/` son:
     - `services/`: Contiene las funciones de la aplicación. Entre ellas, se encuentran las consultas de la base de datos, funciones para convertir datos en objetos y viceversa, así como el custom hook `useLocalStorage`, el cual maneja el almacenamiento local de la aplicación y permite compartir datos entre diferentes partes de la aplicación, así como reducir significativamente las llamadas a la base de datos.
     - `types/`: Contiene los tipos de la aplicación.
 
+## 8. Mejoras
+
+- Mejorar la documentación de la aplicación.
+- Mejorar la seguridad de la aplicación.
