@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import '../css/App.css';
 import CustomTable from '../components/customTable';
 import { Marketer, OperationTable } from '../types/types';
 import { useLocalStorage } from '../services/useLocalStorage';

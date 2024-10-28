@@ -1,5 +1,4 @@
 import React from 'react';
-import '../css/NewOperation.css';
 import { Option } from '../types/types';
 import { convertMarketerToOption } from '../services/utils';
 
