@@ -3,7 +3,7 @@ import { deleteAll, get, post } from "../utils";
 import { MarketerType } from "../lib/marketer.types";
 import { Marketer } from "../db/entities/marketer";
 
-export function marketerRoutes(server: FastifyInstance): void {
+export function marketerRoutes(server: FastifyInstance) {
     server.get("/marketers", async(request, reply) => {
         await get(server, "/marketers", reply);
     });

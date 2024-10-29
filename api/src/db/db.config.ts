@@ -16,8 +16,7 @@ export function configDb(server: FastifyInstance) {
         synchronize: process.env.NODE_ENV === "dev",
         logging: process.env.NODE_ENV === "dev",
         migrations: [__dirname + "/migrations/*.ts"],
-        //migrationsRun: process.env.NODE_ENV === "dev",
-        migrationsRun: false,
+        migrationsRun: process.env.NODE_ENV === "dev",
         entities: [Marketer, Operation]
     })
 }

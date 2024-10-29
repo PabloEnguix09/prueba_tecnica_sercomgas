@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import CustomTable from '../components/customTable';
-import { Marketer, OperationTable } from '../types/types';
+import { Marketer, Operation, OperationTable } from '../types/types';
 import { useLocalStorage } from '../services/useLocalStorage';
 import { list } from '../services/routes';
 import { convertOperationData } from '../services/utils';
@@ -205,8 +205,8 @@ function App() {
 	const [operations, setOperations] = useLocalStorage<OperationTable[]>('operations', mockOperations);
 
 	const initialSetup = async () => {
-		const serverOperations = await list('operations');
-		const serverMarketers = await list('marketers');
+		const serverOperations: Operation[] = await list('operations');
+		const serverMarketers: Marketer[] = await list('marketers');
 		setMarketers(serverMarketers);
 
 		const tableOperations = convertOperationData(serverOperations, marketers);
@@ -214,7 +214,7 @@ function App() {
 		setOperations(tableOperations);
 	};
 
-	useEffect(() => {
+	React.useEffect(() => {
 		initialSetup();
 	}, []);
 

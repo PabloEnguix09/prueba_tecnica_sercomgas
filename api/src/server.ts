@@ -1,9 +1,9 @@
-import fastify from "fastify";
+import fastify, { FastifyInstance } from "fastify";
 import { configDb } from "./db/db.config";
 import { configRoutes } from "./routes";
 import fastifyCors from "@fastify/cors";
 
-export function buildServer(logger: boolean = false) {
+export function buildServer(logger: boolean = false): FastifyInstance {
     const server = fastify({ logger: logger });
 
     configDb(server);

@@ -8,9 +8,7 @@
 		"test": "jest --collectCoverage",
 		"start": "nodemon dist/index.js",
 		"dev": "concurrently \"tsc -w\" \"nodemon dist/index.js\"",
-		"build": "tsc",
-		"typeorm": "typeorm-ts-node-commonjs",
-		"migrate-db": "npm run typeorm migration:run -- -d ./src/db/data-source.ts"
+		"build": "tsc"
 	},
 	"keywords": [],
 	"author": "Pablo Enguix Llopis",

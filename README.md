@@ -43,8 +43,6 @@ Como forma de navegar entre las diferentes rutas de la aplicación, he utilizado
 - `npm start`: Inicia el servidor. Para ello debes realizar una build antes.
 - `npm run dev`: Inicia el servidor en modo de desarrollo. Esto hace que el servidor se reinicie cuando hay cambios en el código.
 - `npm run build`: Crea una build del proyecto.
-- `npm run typeorm`: Migración de la base de datos.
-- `npm run migrate-db`: Ejecuta la migración de datos. Para ello debes realizar una build antes.
 
 ### 2.2. Comandos del front-end
 

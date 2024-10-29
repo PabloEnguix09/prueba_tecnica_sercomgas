@@ -5,7 +5,6 @@ dotenv.config()
 
 async function start() {
     buildServer(process.env.NODE_ENV === "dev");
-
 }
 
 start();

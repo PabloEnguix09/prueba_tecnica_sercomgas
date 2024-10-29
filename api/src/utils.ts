@@ -3,13 +3,8 @@ import { Repository } from "typeorm";
 import { Marketer } from "./db/entities/marketer";
 import { Operation } from "./db/entities/operation";
 
-interface Options {
-    take: number,
-    skip: number
-}
-
-function getRepository(server: FastifyInstance, route: string): Repository<Marketer | Operation> | void {
-    let repo : Repository<Marketer | Operation>;
+function getRepository(server: FastifyInstance, route: string): Repository<object> | void {
+    let repo : Repository<object>;
 
     switch (true) {
         case route.includes("marketers"):
@@ -25,29 +20,64 @@ function getRepository(server: FastifyInstance, route: string): Repository<Marke
     return repo;
 }
 
-export async function get(server: FastifyInstance, route: string, reply: FastifyReply, options?: Options) {
+function createSearchParams<T extends object>(body: T): object {
+
+    let searchParams = {};
+
+    switch (true) {
+        case body instanceof Marketer:
+            searchParams = {name: body.name};
+            break;
+        case body instanceof Operation:
+            searchParams = {marketer_id: body.marketer_id, client_id: body.client_id, type: body.type, amount: body.amount, price: body.price};
+            break;
+        default:
+            break;
+    }
+    return searchParams;
+}
+
+function isBodyCorrect<T>(body: T): boolean {
+
+    let isBodyCorrect = true;
+
+    switch (true) {
+        case body instanceof Marketer:
+            isBodyCorrect = body.name !== undefined;
+            break;
+        case body instanceof Operation:
+            isBodyCorrect = body.marketer_id !== undefined && body.client_id !== undefined && body.type !== undefined && body.amount !== undefined && body.price !== undefined;
+            break;
+        default:
+            break;
+    }
+
+    return isBodyCorrect;
+}
+
+export async function get(server: FastifyInstance, route: string, reply: FastifyReply) {
     const repo = getRepository(server, route);
 
     if (!repo) {
         return;
     }
-    const data = await repo.find(options).then((data) => data).catch((err) => {reply.code(500).send({message: err})});
+    const data = await repo.find().then((data) => data).catch((err) => {reply.code(500).send({message: err})});
     reply.code(200).send({success: true, data: data});
 }
 
-export async function post(server: FastifyInstance, route: string, reply: FastifyReply, body: Marketer | Operation) {
+export async function post<T extends object>(server: FastifyInstance, route: string, reply: FastifyReply, body: T) {
     const repo = getRepository(server, route);
 
     if (!repo) {
         return;
     }
 
-    const searchParams = body instanceof Marketer ? {name: body.name} : {marketer_id: body.marketer_id, client_id: body.client_id, type: body.type, amount: body.amount, price: body.price};
-    
     if (isBodyCorrect(body) === false) {
         reply.code(400).send({message: "Invalid request body"});
         return;
     }
+    
+    const searchParams = createSearchParams(body);
 
     const rowAlreadyExists = await repo.findOneBy(searchParams)
 
@@ -56,20 +86,6 @@ export async function post(server: FastifyInstance, route: string, reply: Fastif
     } else {
         await repo.save(body).then(() => reply.code(201).send({success: true, data: body}));
     }
-}
-
-function isBodyCorrect(body: Marketer | Operation): boolean {
-    if (body instanceof Marketer) {
-        if(body.name === undefined) {
-            return false;
-        }
-    } else if (body instanceof Operation) {
-        if(body.marketer_id === undefined || body.client_id === undefined || body.type === undefined || body.amount === undefined || body.price === undefined) {
-            return false;
-        }
-    }
-
-    return true;
 }
 
 export async function deleteAll(server: FastifyInstance, route: string, reply: FastifyReply) {
