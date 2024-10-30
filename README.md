@@ -6,9 +6,11 @@ Este repositorio es una prueba técnica para la posición de Desarrollador full-
 - [2. Comandos](#2-comandos)
 - [3. Instalación del back-end](#3-instalación-del-back-end)
 - [4. Instalación del front-end](#4-instalación-del-front-end)
-- [5. Arranque de la web](#5-arranque-de-la-web)
-- [6. Arquitectura](#6-arquitectura)
-- [7. Estructura de archivos](#7-estructura-de-archivos)
+- [5. Variables de entorno](#5-variables-de-entorno)
+- [6. Arranque de la web](#6-arranque-de-la-web)
+- [7. Arquitectura](#7-arquitectura)
+- [8. Estructura de archivos](#8-estructura-de-archivos)
+- [9. Mejoras](#9-mejoras)
 ***
 
 ## 1. Tecnologías utilizadas
@@ -83,7 +85,21 @@ npm test
    npm install
    ```
 ***
-## 5. Arranque de la web
+
+## 5. Variables de entorno
+
+En el archivo `.env` que se encuentra en la carpeta `api/` puedes configurar los valores de las variables de entorno de la aplicación. En caso de que alguna de ellas no se encuentre en el archivo `.env` se utilizarán los valores por defecto que se definen a continuación.
+
+- `PORT`: Puerto de la aplicación del servidor back-end. Por defecto es `8080`
+- `NODE_ENV`: Entorno de la aplicación. Por defecto es `dev`. Para hacer las pruebas debe establecerse en `test`
+- `DB_HOST`: Host de la base de datos. Por defecto es `localhost`
+- `DB_PORT`: Puerto de la base de datos. Por defecto es `5432`
+- `DB_USERNAME`: Nombre de usuario de la base de datos. Por defecto es `sercomgas` 
+- `DB_PASSWORD`: Contrasenya de la base de datos. Por defecto es `sercomgas`
+- `DB_DATABASE`: Nombre de la base de datos. Por defecto es `sercomgas`
+- `DB_TEST_DATABASE`: Nombre de la base de datos de pruebas. Por defecto es `testDb`
+
+## 6. Arranque de la web
 
 1. Abre una terminal en la carpeta raíz y ejecuta
    ```
@@ -96,7 +112,7 @@ npm test
    npm start
    ```
 
-## 6. Arquitectura
+## 7. Arquitectura
 
 Para el back-end se ha utilizado una arquitectura modular basada en capas, también conocida como arquitectura de tres capas en algunos contextos. Este tipo de arquitectura organiza el código en capas de responsabilidad separadas, lo que facilita la escalabilidad, el mantenimiento y la comprensión del proyecto. Esta arquitectura sigue principios de **Domain-Driven Design (DDD)** y **Separation of Concerns (SoC)**, por lo que es ideal para aplicaciones que requieren claridad, mantenimiento y posibilidad de expansión en proyectos de tamaño pequeño a mediano.
 
@@ -120,7 +136,7 @@ Los beneficios de la arquitectura de componentes son:
 
 3. Escalabilidad y Mantenibilidad: La separación en capas permite que la aplicación sea fácil de mantener y escalar. Nuevas funcionalidades pueden añadirse sin necesidad de modificar significativamente la estructura existente.
 
-## 7. Estructura de archivos
+## 8. Estructura de archivos
 
 ```
 api/
@@ -164,7 +180,7 @@ Los directorios que se encuentran dentro de la carpeta `app/` son:
     - `services/`: Contiene las funciones de la aplicación. Entre ellas, se encuentran las consultas de la base de datos, funciones para convertir datos en objetos y viceversa, así como el custom hook `useLocalStorage`, el cual maneja el almacenamiento local de la aplicación y permite compartir datos entre diferentes partes de la aplicación, así como reducir significativamente las llamadas a la base de datos.
     - `types/`: Contiene los tipos de la aplicación.
 
-## 8. Mejoras
+## 9. Mejoras
 
 - Mejorar la documentación de la aplicación.
 - Mejorar la seguridad de la aplicación.
